@@ -33,7 +33,7 @@ public class Converter {
 		return Math.toRadians(decimalDegrees);
 	}
 	
-	public static void toEastingsNorthings(double latitude, double longitude) {
+	public static ENPoint toEastingsNorthings(LatLongPoint point) {
 		
 		// Use same symbols as in Annexe C 
 		double a = SEMI_MAJOR_AXIS;
@@ -50,8 +50,8 @@ public class Converter {
 		double φ0 = LATITUDE_OF_TRUE_ORIGIN;
 		double λ0 = LONGITUDE_OF_TRUE_ORIGIN;
 
-		double φ = latitude;
-		double λ = longitude;
+		double φ = point.m_latitude.asRadians();
+		double λ = point.m_longitude.asRadians();
 
 		double n = (a-b)/(a+b);
 		double n_2 = n*n;
@@ -121,11 +121,38 @@ public class Converter {
 		System.out.println();
 		System.out.printf("- N   : %f %n", N);
 		System.out.printf("- E   : %f %n", E);		
+		
+		ENPoint enp = new ENPoint(E, N);
+		
+		return enp;
 	}
 	
 	public static void main(String args[]) {
-				
-		toEastingsNorthings(degreesToRadians(52, 39, 27.2531), degreesToRadians(1, 43, 4.5177));
+
+//		toEastingsNorthings(degreesToRadians(52, 39, 27.2531), degreesToRadians(1, 43, 4.5177));
+		
+		LatLong.Generator g = new LatLong.Generator(); 
+		LatLong lat = g.fromDMS(LatLong.AngleType.LATITUDE, 52, 39, 27.2531, "N");
+		LatLong lon = g.fromDMS(LatLong.AngleType.LONGITUDE, 1, 43, 4.5177, "E");
+
+		System.out.println();
+		System.out.printf("Lat: %s %n" , lat.asDetailString());
+		System.out.printf("Lon: %s %n" , lon.asDetailString());
+		System.out.println();
+		
+		if(lat.isValid() && lon.isValid()) {
+			LatLongPoint pIn = new LatLongPoint(lat, lon);		
+			ENPoint pOut = toEastingsNorthings(pIn);
+			System.out.println();
+			System.out.println();
+			System.out.println("Converted:");
+			System.out.printf(" %s %n", pIn.asString() );
+			System.out.println("to:");
+			System.out.printf(" %s %n", pOut.asString() );
+		}
+		else {
+			System.out.println("Invalid point");
+		}
 	}
 }
 
