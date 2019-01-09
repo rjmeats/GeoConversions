@@ -7,6 +7,12 @@
  * 	https://www.ordnancesurvey.co.uk/docs/support/guide-coordinate-systems-great-britain.pdf
  * 
  * NB Longitude east of meridian is postive.
+ * 
+ * Also took some inspiration from the Javascript implementation at https://www.movable-type.co.uk/scripts/latlong-os-gridref.html, 
+ * particularly use of Greek characters in variable names to match what the OS doc uses. For example
+ * - φ to refer to latitude variables
+ * - λ to refer to longitude variables
+ * Java allows these as valid letters for use in variable naming.
  */
 
 import static java.lang.Math.pow;
@@ -69,25 +75,13 @@ public class Converter {
 		}
 	}
 	
-//	public static double degreesToRadians(double degrees, double minutes, double seconds) {
-//		double decimalDegrees = degrees + minutes/60.0 + seconds/3600.0;
-//		return Math.toRadians(decimalDegrees);
-//	}
-	
 	public static ENPoint toEastingsNorthings(Ellipsoid ellipsoid, Projection projection, LatLongPoint point) {
 		
-		// Use same symbols as in Annexe C 
-		//double a = SEMI_MAJOR_AXIS;
-		//double b = SEMI_MINOR_AXIS;
-		
-		// From chapter B.1
-		//double e_2 = ((a*a) - (b*b)) / (a*a);
-
 		// Simplify references to ellipsoid parameters
 		double a = ellipsoid.a;
 		//double b = ellipsoid.b;
 		double e_2 = ellipsoid.e_2;
-
+		
 		// Simplify references to projection parameters
 		double E0 = projection.E0;
 		double N0 = projection.N0;
@@ -107,13 +101,6 @@ public class Converter {
 		double tanφ_4 = pow(tan(φ), 4);
 		
 		double M = calculateM(ellipsoid, projection, φ);
-//		double M = b * F0 * 
-//					(   (  ( 1 + n + (5/4)*n_2 +  (5/4)*n_3 ) * (φ-φ0)  )                             -
-//					    (  (   3*n +     3*n_2 + (21/8)*n_3 ) * sin(φ-φ0)     * cos(φ+φ0) )           + 
-//					    (  (        (15/8)*n_2 + (15/8)*n_3 ) * sin(2*(φ-φ0)) * cos(2*(φ+φ0)) )       -
-//					    (  (                    (35/24)*n_3 ) * sin(3*(φ-φ0)) * cos(3*(φ+φ0)) )
-//					);
-
 		double ν = a * F0 * Math.pow(1 - (e_2 * sinφ_2), -0.5); 
 		double ρ = a * F0 * (1 - e_2) * Math.pow(1 - (e_2 * sinφ_2), -1.5);		
 		double η_2 = (ν / ρ) - 1;  
@@ -132,21 +119,9 @@ public class Converter {
 		
 		System.out.println("Standard values:");
 		System.out.println(ellipsoid.asString());
-//		System.out.printf("- a    : %f %n", a);
-//		System.out.printf("- b    : %f %n", b);
-//		System.out.printf("- e*e  : %f %n", e_2);
-//		System.out.println();
 		System.out.println(projection.asString());
-//		System.out.printf("- E0   : %f %n", E0);
-//		System.out.printf("- N0   : %f %n", N0);
-//		System.out.printf("- F0   : %f %n", F0);
-//		System.out.println();
-//		System.out.printf("- φ0   : %f %n", φ0);
-//		System.out.printf("- λ0   : %f %n", λ0);
 		System.out.println();
-//		System.out.printf("- n    : %f %n", n);
-		System.out.println();
-		System.out.println("Values for the specific latitude/longitude:");
+		System.out.println("Values derived for the specific latitude/longitude value:");
 		System.out.println();
 		System.out.printf("- φ    : %f %n", φ);
 		System.out.printf("- λ    : %f %n", λ);
@@ -215,27 +190,32 @@ public class Converter {
 		double tanφ_4 = pow(tanφ, 4);
 		double tanφ_6 = pow(tanφ, 6);
 		
-		double ν = a * F0 * Math.pow(1 - (e_2 * sinφ_2), -0.5); 
+		double ν = a * F0 * Math.pow(1 - (e_2 * sinφ_2), -0.5);
+		double ν_3 = Math.pow(ν,3);
+		double ν_5 = Math.pow(ν,5);
+		double ν_7 = Math.pow(ν,7);
 		double ρ = a * F0 * (1 - e_2) * Math.pow(1 - (e_2 * sinφ_2), -1.5);		
 		double η_2 = (ν / ρ) - 1;  
 		
 		double VII = tanφ/(2*ρ*ν);  
-		double VIII = tanφ/(24*ρ*ν*ν*ν) * (5 + 3*tanφ_2 + η_2 - 9*tanφ_2*η_2);
-		double IX = tanφ/(720*ρ*ν*ν*ν*ν*ν) * (61 + 90*tanφ_2 + 45*tanφ_4);
+		double VIII = tanφ/(24*ρ*ν_3) * (5 + 3*tanφ_2 + η_2 - 9*tanφ_2*η_2);
+		double IX = tanφ/(720*ρ*ν_5) * (61 + 90*tanφ_2 + 45*tanφ_4);
 		
-		// OS doc uses sec here, but sec = 1/cos so no real benefit (and there is no Java sec method - not really relevant is trivial to calculate).
+		// OS doc uses the sec function here, but as sec = 1/cos, just use 1/cos below.
 		double X = 1.0/(cosφ*ν); 
-		double XI = 1.0/(6*cosφ*ν*ν*ν) * (ν/ρ + 2*tanφ_2);
-		double XII = 1.0/(120*cosφ*ν*ν*ν*ν*ν) * (5 + 28*tanφ_2 + 24*tanφ_4);
-		double XIIa = 1.0/(5040*cosφ*ν*ν*ν*ν*ν*ν*ν) * (61 + 662*tanφ_2 + 1320*tanφ_4 + 720*tanφ_6);
+		double XI = 1.0/(6*cosφ*ν_3) * (ν/ρ + 2*tanφ_2);
+		double XII = 1.0/(120*cosφ*ν_5) * (5 + 28*tanφ_2 + 24*tanφ_4);
+		double XIIa = 1.0/(5040*cosφ*ν_7) * (61 + 662*tanφ_2 + 1320*tanφ_4 + 720*tanφ_6);
 
 		double Ediff = E - E0;
 		double φ = φ1 - VII*pow(Ediff, 2) + VIII*pow(Ediff, 4) - IX*pow(Ediff, 6);   
 		double λ = λ0 + X*Ediff - XI*pow(Ediff, 3) + XII*pow(Ediff, 5) - XIIa*pow(Ediff, 7);
 				
+		System.out.println();
 		System.out.println("Standard values:");
 		System.out.println(ellipsoid.asString());
 		System.out.println(projection.asString());
+		System.out.println();
 		System.out.println("Values for the specific easting/norting:");
 		System.out.println();
 		System.out.printf("- E    : %f %n", E);
@@ -260,10 +240,8 @@ public class Converter {
 		LatLong lat = g.fromRadians(LatLong.AngleType.LATITUDE, φ);
 		LatLong lon = g.fromRadians(LatLong.AngleType.LONGITUDE, λ);
 
-		LatLongPoint llp = new LatLongPoint(lat, lon);
-		
+		LatLongPoint llp = new LatLongPoint(lat, lon);		
 		return llp;
-
 	}
 
 	private static double calculateM(Ellipsoid ellipsoid, Projection projection, double φ) {
@@ -290,8 +268,6 @@ public class Converter {
 	
 	public static void main(String args[]) {
 
-//		toEastingsNorthings(degreesToRadians(52, 39, 27.2531), degreesToRadians(1, 43, 4.5177));
-		
 		LatLong.Generator g = new LatLong.Generator(); 
 		LatLong lat = g.fromDMS(LatLong.AngleType.LATITUDE, 52, 39, 27.2531, "N");
 		LatLong lon = g.fromDMS(LatLong.AngleType.LONGITUDE, 1, 43, 4.5177, "E");
