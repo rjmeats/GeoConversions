@@ -10,10 +10,14 @@ public class LatLongPoint {
 	}
 	
 	public String asString() {
-		return String.format("Lat=%s / Long=%s", m_latitude.asString(), m_longitude.asString());
+		return String.format("Lat=%s  Long=%s", m_latitude.asString(), m_longitude.asString());
+	}
+	
+	public String asDMSString() {
+		return String.format("Lat = %s  Long = %s", m_latitude.asDMSString(), m_longitude.asDMSString());
 	}
 	
 	public String asDetailString() {
-		return String.format("Lat=%s%nLong=%s", m_latitude.asDetailString(), m_longitude.asDetailString());
+		return String.format("Lat = %s%nLong = %s", m_latitude.asDMSString(), m_longitude.asDetailString());
 	}
 }

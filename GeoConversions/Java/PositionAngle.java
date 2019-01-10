@@ -86,6 +86,14 @@ public class PositionAngle {
 				: "*** Invalid angle ***";
 	}
 
+	public String asDMSString() {
+		return m_dms.asString();
+	}
+
+	public String asUnsignedDMSString() {
+		return m_dms.asUnsignedString();
+	}
+
 	// ==============================================================================================
 	
 	// Represent angle as degrees, minutes and seconds, with a sign (values are stored as positive)
@@ -198,6 +206,15 @@ public class PositionAngle {
 									m(), MINUTE_SYMBOL,
 									s(), SECOND_SYMBOL,
 									signString) 
+					: "*** Invalid DMS ***";
+		}
+		
+		public String asUnsignedString() {
+			return isValid() ? 
+					String.format("%d%s %02d%s %f%s", 
+									d(), DEGREE_SYMBOL, 
+									m(), MINUTE_SYMBOL,
+									s(), SECOND_SYMBOL)
 					: "*** Invalid DMS ***";
 		}
 	}

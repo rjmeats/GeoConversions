@@ -54,7 +54,16 @@ public class LatLong {
 			return "*** Not valid ***";
 		}
 	}
-	
+
+	public String asDMSString() {
+		if(isValid()) {
+			return String.format("%s %s", m_angle.asUnsignedDMSString(), (m_direction.length() > 0 ? m_direction : "0"));
+		}
+		else {
+			return "*** Not valid ***";
+		}		
+	}
+
 	public String asDetailString() {
 		if(isValid()) {
 			return String.format("%s : %s", m_angle.asString(), (m_direction.length() > 0 ? m_direction : "0"));
