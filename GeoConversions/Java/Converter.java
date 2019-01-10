@@ -10,8 +10,8 @@
  * 
  * Also took some inspiration from the Javascript implementation at https://www.movable-type.co.uk/scripts/latlong-os-gridref.html, 
  * particularly use of Greek characters in variable names to match what the OS doc uses. For example
- * - φ to refer to latitude variables
- * - λ to refer to longitude variables
+ * - φ in latitude variables
+ * - λ in longitude variables
  * Java allows these as valid letters for use in variable naming.
  */
 
@@ -244,6 +244,11 @@ public class Converter {
 		return llp;
 	}
 
+	// Arc of Meridian calculation. 
+	// 2.21 and 2.22 in History of Retriangulation of Great Britain.
+	// which references two German documents which it labels Jordan (14) and Hristow (15)
+	// Perhaps also:
+	// https://books.google.co.uk/books?id=f1bgBAAAQBAJ&lpg=PA300&ots=ULSkaJjjAu&dq=jordan%20eggert&pg=PA10#v=onepage&q=jordan%20eggert&f=false
 	private static double calculateM(Ellipsoid ellipsoid, Projection projection, double φ) {
 
 		// Derived ellipsoid values
