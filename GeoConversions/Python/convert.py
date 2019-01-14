@@ -25,6 +25,9 @@ def toDegreesFromRadians(radians) :
 
 def convertToEastingNorthing(ellipsoid, projection, lat_d, long_d) :
 
+    print()
+    print("Values derived for the specific latitude/longitude value:")
+
     a = ellipsoid[0]
     b = ellipsoid[1]
     e_2 = ((a*a) - (b*b)) / (a*a)
@@ -74,7 +77,6 @@ def convertToEastingNorthing(ellipsoid, projection, lat_d, long_d) :
     N = N0 + I + II*pow(λDiff, 2) + III*pow(λDiff, 4) + IIIA*pow(λDiff, 6)
     E = E0 +     IV*pow(λDiff, 1) + V*pow(λDiff, 3)   + VI*pow(λDiff, 5)
 
-    print("Values derived for the specific latitude/longitude value:")
     print()
     print("- φ    : ", φ)
     print("- λ    : ", λ)
@@ -98,6 +100,9 @@ def convertToEastingNorthing(ellipsoid, projection, lat_d, long_d) :
 
 def convertToLatLong(ellipsoid, projection, E, N) :
 
+    print()
+    print("Values derived for the specific N/E coordinates:")
+    
     a = ellipsoid[0]
     b = ellipsoid[1]
     e_2 = ((a*a) - (b*b)) / (a*a)
@@ -116,6 +121,7 @@ def convertToLatLong(ellipsoid, projection, E, N) :
     M = 0
     φ1 = φ0						# Start with the latitude set to that of the true origin. 
     loops = 0
+    print()
     while True :
         loops += 1
         old_φ = φ1
@@ -175,7 +181,6 @@ def convertToLatLong(ellipsoid, projection, E, N) :
     φ_deg = toDegreesFromRadians(φ)
     λ_deg = toDegreesFromRadians(λ)
 
-    print("Values derived for the specific latitude/longitude value:")
     print()
     print("- E    : ", E)
     print("- N    : ", N)
@@ -222,15 +227,17 @@ def calculateM(ellipsoid, projection, φ) :
 
     return M
 
-
+airy1830Ellipsoid = (6377563.396, 6356256.909)
+nationalGridProjection = (0.9996012717, toRadians(toDegreesFromDMS(+1, 49, 0, 0)), toRadians(toDegreesFromDMS(-1, 2, 0, 0)), 400000, -100000)
 
 if __name__ == "__main__" :
-    ellipsoid = (6377563.396, 6356256.909)
-    projection = (0.9996012717, toRadians(toDegreesFromDMS(+1, 49, 0, 0)), toRadians(toDegreesFromDMS(-1, 2, 0, 0)), 400000, -100000)
 
     lat_d = toDegreesFromDMS(1, 52, 39, 27.2531)
     lon_d = toDegreesFromDMS(1, 1, 43, 4.5177)
-    convertToEastingNorthing(ellipsoid, projection, lat_d, lon_d)
+    ellipsoid = airy1830Ellipsoid
+    projection = nationalGridProjection
 
-    print()
-    convertToLatLong(ellipsoid, projection, 651409.903, 313177.270)
+    convertToEastingNorthing(ellipsoid, nationalGridProjection, lat_d, lon_d)
+    e = 651409.903
+    n = 313177.270
+    convertToLatLong(ellipsoid, projection, e, n)
