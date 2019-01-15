@@ -238,6 +238,11 @@ if __name__ == "__main__" :
     projection = nationalGridProjection
 
     convertToEastingNorthing(ellipsoid, nationalGridProjection, lat_d, lon_d)
+
+    print()
+    print("=========================================================")
+    print()
+
     e = 651409.903
     n = 313177.270
     convertToLatLong(ellipsoid, projection, e, n)
