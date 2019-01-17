@@ -93,8 +93,8 @@ def convertToEastingNorthing(ellipsoid, projection, lat_d, long_d) :
     print("- V    : ", V)
     print("- VI   : ", VI)
     print()
-    print("- N   : ", N)
-    print("- E   : ", E)
+    print("- N (m) : ", N)
+    print("- E (m) : ", E)
 
     return (E, N)
 
