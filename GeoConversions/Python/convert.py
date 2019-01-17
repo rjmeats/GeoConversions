@@ -202,8 +202,8 @@ def convertToLatLong(ellipsoid, projection, E, N) :
     print("- λ rad : ", λ)
     print("- φ deg : ", φ_deg)
     print("- λ deg : ", λ_deg)
-    print("- φ     : ", toDMS(φ_deg))
-    print("- λ     : ", toDMS(λ_deg))
+    print("- φ dms : ", toDMS(φ_deg))
+    print("- λ dms : ", toDMS(λ_deg))
 
     return (φ_deg, λ_deg)
 
