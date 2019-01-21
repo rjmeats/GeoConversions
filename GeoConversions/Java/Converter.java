@@ -1,4 +1,5 @@
-﻿/*
+
+/*
  * Convert latitude and longitude to OS National Grid Easting and Northing.
  * 
  * Using formulas from Annexe C of 'A Guide to the Coordinate Systems in Great Britain',
@@ -28,7 +29,8 @@ public class Converter {
 	// Airy 1830 ellipsoid values, potentially other ellipsoids
 	
 	public enum Ellipsoid {
-		AIRY_1830(6_377_563.396, 6_356_256.909);
+		AIRY_1830(6_377_563.396, 6_356_256.909),
+		WGS_84(6_378_137.000, 6_356_752.3141);
 		
 		public final double a;		// Semi-major axis (m)
 		public final double b;		// Semi-minor axis (m)
@@ -331,7 +333,8 @@ public class Converter {
 		LatLong lat = g.fromDMS(LatLong.AngleType.LATITUDE, 52, 39, 27.2531, "N");
 		LatLong lon = g.fromDMS(LatLong.AngleType.LONGITUDE, 1, 43, 4.5177, "E");
 
-		Converter c = new Converter(Ellipsoid.AIRY_1830, Projection.NATIONAL_GRID);
+		//Converter c = new Converter(Ellipsoid.AIRY_1830, Projection.NATIONAL_GRID);
+		Converter c = new Converter(Ellipsoid.WGS_84, Projection.NATIONAL_GRID);
 		c.setDiagnostics(true);
 		
 		if(lat.isValid() && lon.isValid()) {
