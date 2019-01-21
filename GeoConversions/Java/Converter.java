@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Convert latitude and longitude to OS National Grid Easting and Northing.
  * 
  * Using formulas from Annexe C of 'A Guide to the Coordinate Systems in Great Britain',
@@ -359,63 +359,5 @@ public class Converter {
 		System.out.println("to:");
 		System.out.printf(" %s %n", p2Out.asDMSString() );
 	}
-
-
-	// ======================================================================================
-	// ======================================================================================
-	
-	// AWS Lambda additions
-	
-	// Constructor with no parameters
-	public Converter( ) {
-		this(Ellipsoid.AIRY_1830, Projection.NATIONAL_GRID);
-		setDiagnostics(true);
-	}
-	
-	public ConverterResponse handler(ConverterInput input) {
-		double dLat = Double.parseDouble(input.getLat());
-		double dLon = Double.parseDouble(input.getLon());
-
-		LatLong.Generator g = new LatLong.Generator(); 
-		LatLong lat = g.fromDegrees(LatLong.AngleType.LATITUDE, dLat);
-		LatLong lon = g.fromDegrees(LatLong.AngleType.LONGITUDE, dLon);
-
-		ENPoint p = new ENPoint(0, 0);
-		if(lat.isValid() && lon.isValid()) {
-			LatLongPoint pIn = new LatLongPoint(lat, lon);		
-			ENPoint pOut = this.toEastingNorthing(pIn);
-			System.out.println();
-			System.out.println();
-			System.out.println("Converted:");
-			System.out.printf(" %s %n", pIn.asDMSString() );
-			System.out.println("to:");
-			System.out.printf(" %s %n", pOut.asString() );
-			p = pOut;			
-		}
-		else {
-			System.out.println("Invalid point");
-		}
-		
-		return new ConverterResponse(p);
-	}
-	
-	public static class ConverterInput {
-		private String lat;
-		private String lon;
-		public String getLat() { return lat; }
-		public void setLat(String lat) { this.lat = lat; } 
-		public String getLon() { return lon; }
-		public void setLon(String lon) { this.lon = lon; } 
-	}
-	
-	public static class ConverterResponse {
-		private ENPoint p;
-		ConverterResponse(ENPoint p) { this.p = p; }
-		public double getE() { return p.m_easting; }
-		public double getN() { return p.m_northing; }
-	}
-
-	// ======================================================================================
-	// ======================================================================================	
 }
 
