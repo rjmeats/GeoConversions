@@ -333,8 +333,8 @@ public class Converter {
 		LatLong lat = g.fromDMS(LatLong.AngleType.LATITUDE, 52, 39, 27.2531, "N");
 		LatLong lon = g.fromDMS(LatLong.AngleType.LONGITUDE, 1, 43, 4.5177, "E");
 
-		//Converter c = new Converter(Ellipsoid.AIRY_1830, Projection.NATIONAL_GRID);
-		Converter c = new Converter(Ellipsoid.WGS_84, Projection.NATIONAL_GRID);
+		Converter c = new Converter(Ellipsoid.AIRY_1830, Projection.NATIONAL_GRID);
+		//Converter c = new Converter(Ellipsoid.WGS_84, Projection.NATIONAL_GRID);
 		c.setDiagnostics(true);
 		
 		if(lat.isValid() && lon.isValid()) {
